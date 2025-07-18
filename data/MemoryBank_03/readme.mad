@@ -1,0 +1,121 @@
+`markdown
+# 全能AI个人助理 (Omni-Personal AI Assistant)
+
+这是一个高度先进、具备深度记忆和多模式推理能力的个人AI助手项目。它不仅仅是一个问答机器人，更是一个能够学习、记忆、反思并与用户共同成长的智能伙伴。
+
+本项目的代码实现融合了多个前沿AI研究领域的思想，并将其落地为一个结构清晰、可交互、可扩展的应用程序。
+
+## 核心特性 (Core Features)
+
+- **🧠 双层记忆系统 (Dual-Memory System)**: 借鉴 [LongMem](https://arxiv.org/abs/2306.07174) 的思想，系统拥有一个用于处理即时上下文的**短期工作缓存**和一个用于永久存储历史、摘要和画像的**长期知识库**。
+
+- **📖 自动事实提取 (Automatic Fact Extraction)**: Agent能够主动从对话中识别并学习用户相关的个人事实（如生日、姓名、偏好等），并将其存入长期记忆，无需用户下达“记住”等明确指令。
+
+- **🤔 多模式推理引擎 (Multi-Mode Reasoning Engine)**:
+  - **标准模式**: 采用受 "[Reasoning Teachers](https://arxiv.org/abs/2212.10071)" 启发的两步式“推理链(CoT)-回答”模式，确保答案的逻辑性和可靠性。
+  - **深度思考模式**: 采用受 "[Graph of Thoughts](https://arxiv.org/abs/2308.09687)" 启发的“思想生成-聚合-升华”模式，用于处理需要深思熟虑的复杂问题。
+
+- **🎯 专业级重排序 (Professional Reranking)**: 在检索阶段后，使用专门的`Cross-Encoder`模型对候选记忆进行重排序，确保提供给LLM的上下文材料是最高度相关的。
+
+- **⚙️ 完善的记忆管理 (Full Memory Management)**:
+  - **反思 (Reflection)**: 定期对记忆进行总结，形成摘要和用户画像。
+  - **遗忘 (Forgetting)**: 基于艾宾浩斯遗忘曲线，自动修剪陈旧且不常被访问的记忆。
+  - **加固 (Reinforcement)**: 当一段记忆被成功检索和使用时，其重要性会得到提升。
+
+- **🌐 交互式Web界面 (Interactive Web UI)**: 使用 **Gradio** 构建了现代化、用户友好的Web操作界面，支持多轮对话、模式切换和会话管理。
+
+- **🏗️ 模块化与可测试架构 (Modular & Testable Architecture)**: 项目代码被重构为清晰的应用包结构，并引入了**单元测试(Unit Tests)**，保证了代码的健壮性和可维护性。
+
+## 技术架构 (Architecture)
+
+项目采用模块化的结构，将核心逻辑、配置和界面分离。
+
+- **后端LLM**: 通过API调用本地部署的Ollama服务（本项目以`qwen2:7b`为例）。
+- **向量数据库**: 使用`FAISS`进行高效的相似度搜索。
+- **文本嵌入与重排**: 使用`sentence-transformers`库加载Embedding模型和Cross-Encoder Reranker模型。
+- **Web框架**: 使用`Gradio`构建交互式Demo。
+
+## 安装与设置 (Installation & Setup)
+
+请遵循以下步骤来设置和运行本项目。
+
+### 1. 克隆仓库
+```bash
+git clone <your-repository-url>
+cd your_project_name
+```
+
+### 2. 创建并激活Python虚拟环境 (推荐)
+```bash
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# macOS / Linux
+source venv/bin/activate
+```
+
+### 3. 安装依赖
+```bash
+pip install -r requirements.txt
+```
+
+### 4. 下载模型
+- **嵌入与重排模型**: 请确保在`config.py`中指定的`EMBEDDING_MODEL_NAME`和`RERANKER_MODEL_PATH`路径下存在对应的sentence-transformers模型。
+- **LLM**: 请通过Ollama下载并运行本项目所需的语言模型。
+```bash
+ollama pull qwen2:7b
+```
+
+### 5. 检查配置
+打开`config.py`文件，确认所有路径和模型名称均配置正确。
+
+## 如何运行 (How to Run)
+
+您需要至少保持两个终端窗口处于打开状态。
+
+### 1. 启动后端LLM服务
+在第一个终端中，启动Ollama服务。
+```bash
+ollama serve
+```
+
+### 2. 启动Gradio Web应用
+在第二个终端中，进入项目根目录，然后运行`app.py`。
+```bash
+python app.py
+```
+程序启动后，终端会给出一个本地URL (例如 http://127.0.0.1:7860)。在您的浏览器中打开此地址即可访问Demo。
+
+### 3. (可选) 运行单元测试
+在项目根目录运行以下命令，以确保核心模块正常工作。
+```bash
+python -m unittest discover tests
+```
+
+## 如何使用 (How to Use)
+
+1. **加载用户**: 在Web界面左侧的“控制面板”中，输入您的名字并按回车。系统会为您加载或创建专属的记忆库。
+
+2. **选择模式**:
+   - **标准模式**: 默认关闭“深度思考模式”开关，适用于快速问答。
+   - **深度思考模式**: 勾选“深度思考模式”开关，适用于需要深入分析的复杂问题。
+
+3. **开始对话**: 在右侧底部的输入框中输入您的问题，与AI开始交互。
+
+4. **自动记忆**: 在对话中自然地提及您的个人信息（如“我下周要去北京出差”），AI会自动捕捉并学习这些事实。
+
+5. **清除与重启**: 点击左侧“清除记忆并重启”按钮，可以清空当前用户的所有记忆（包括长期记忆文件），并开始一个全新的会话。
+
+## 未来展望 (Future Work)
+- [ ] AI主动确认: 在自动提取事实后，由AI向用户反问以确认是否需要记忆，提高准确性。
+- [ ] 数据库集成: 将`memory.json`替换为更健壮的数据库（如SQLite或PostgreSQL）来管理长期记忆。
+- [ ] 流式输出: 优化Gradio的后端逻辑，实现AI回答的流式打字机效果，提升即时反馈体验。
+- [ ] UI优化: 增加更多状态显示和交互元素，进一步提升用户体验。
+
+## 许可证 (License)
+本项目采用 MIT License 授权。
+```
+
+以上内容完全遵循Markdown语法，可直接保存为`README.md`文件，适用于GitHub、GitLab等代码托管平台，格式会被自动渲染为清晰的结构。如需调整细节（如仓库地址、项目名称等），直接修改对应占位符即可。
