@@ -11,7 +11,7 @@ DEEPSEEK_MODEL_NAME = "qwen2:1.5b" # 必须与你在Ollama中运行的模型名�
 
 DEEPSEEK_API_URL = "https://api.deepseek.com/chat/completions"
 # 在这里替换成你的真实 API Key
-DEEPSEEK_API_KEY = "sk-a7ad78960dcf4f338385e20cd59534cb" 
+DEEPSEEK_API_KEY = "sk-***" 
 DEEPSEEK_MODEL_NAME = "deepseek-chat"
 
 
